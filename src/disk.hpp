@@ -124,10 +124,9 @@ struct FileDisk {
     #ifdef USE_MMAP
             // mmap
             if (map_ == nullptr) {
-                
-                //::fseek(f_, 0L, SEEK_END);
-                map_length_ = filelength(fno_);
-                //::fseek(f_, 0L, SEEK_SET);
+                ::fseek(f_, 0L, SEEK_END);
+                map_length_ = ::ftell(f_);
+                ::fseek(f_, 0L, SEEK_SET);
                 if (map_length_) {
                     if ((map_ = (char *)mmap(NULL, map_length_, PROT_READ|PROT_WRITE, MAP_SHARED, ::fileno(f_), 0)) == MAP_FAILED) {
                         std::cout << "\tmap failed,  errno " << errno << std::endl;
@@ -240,7 +239,7 @@ struct FileDisk {
         }
     #endif
     #endif
-    
+
 #if ENABLE_LOGGING
         disk_log(filename_, op_t::write, begin, length);
 #endif
@@ -327,7 +326,7 @@ struct BufferedDisk : Disk
 #ifndef _WIN32
 #ifdef USE_MMAP
         if (disk_->map_ == nullptr)
-            disk_->Open(0b10); // retryOpenFlag
+            disk_->Open(retryOpenFlag); // retryOpenFlag
         
         if (disk_->map_)
             return (uint8_t const*) disk_->map_ + begin;
