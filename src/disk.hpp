@@ -326,7 +326,7 @@ struct BufferedDisk : Disk
 #ifndef _WIN32
 #ifdef USE_MMAP
         if (disk_->map_ == nullptr)
-            disk_->Open(retryOpenFlag); // retryOpenFlag
+            disk_->Open(0b10); // retryOpenFlag
         
         if (disk_->map_)
             return (uint8_t const*) disk_->map_ + begin;
